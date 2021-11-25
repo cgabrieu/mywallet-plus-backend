@@ -1,6 +1,6 @@
 import connection from "../database.js";
 
-async function create(user, token) {
+export async function create(user, token) {
   const result = await connection.query(
     `
       INSERT INTO sessions
@@ -13,5 +13,3 @@ async function create(user, token) {
 
   return result.rows[0];
 }
-
-export { create };
