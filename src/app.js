@@ -5,45 +5,18 @@ import jwt from "jsonwebtoken";
 
 import connection from "./database.js";
 import * as userController from "./controllers/userController.js";
+import * as eventsController from "./controllers/eventsController.js";
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.post("/sign-up", async (req, res) => {
-  try {
-    const { name, email, password } = req.body;
-
-    if (!name || !email || !password) {
-      return res.sendStatus(400);
-    }
-
-    const existingUserWithGivenEmail = await connection.query(
-      `SELECT * FROM "users" WHERE "email"=$1`,
-      [email]
-    );
-
-    if (existingUserWithGivenEmail.rows[0]) {
-      return res.sendStatus(409);
-    }
-
-    const hashedPassword = bcrypt.hashSync(password, 12);
-
-    await connection.query(
-      `INSERT INTO "users" ("name", "email", "password") VALUES ($1, $2, $3)`,
-      [name, email, hashedPassword]
-    );
-
-    res.sendStatus(201);
-  } catch (err) {
-    console.error(err);
-    res.sendStatus(500);
-  }
-});
-
+app.post("/sign-up", userController.signUp);
 app.post("/sign-in", userController.signIn);
 
-app.post("/financial-events", async (req, res) => {
+app.post("/sign-in", eventsController.financialEvents);
+
+app.post("/financial-eventsTESTE", async (req, res) => {
   try {
     const authorization = req.headers.authorization || "";
     const token = authorization.split("Bearer ")[1];
